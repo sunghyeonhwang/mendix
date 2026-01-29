@@ -1,6 +1,6 @@
 {
   "courseInfo": {
-    "title": "React 완벽 가이드: 기초부터 고급까지",
+    "title": "바이브 코딩 완벽 가이드: 기초부터 실전 프로젝트까지",
     "instructor": "김재범",
     "totalDuration": "12시간",
     "lectureCount": 24
@@ -8,47 +8,47 @@
   "sections": [
     {
       "id": 1,
-      "title": "섹션 1: React 기초",
+      "title": "섹션 1: 바이브 코딩 기초",
       "description": "6개 강의 · 2시간 30분",
       "lectures": [
         {
           "id": 1,
-          "title": "React란 무엇인가?",
+          "title": "바이브 코딩 도구와 기술의 이해",
           "duration": "15:20",
           "durationSeconds": 920,
-          "vimeoId": "76979871",
+          "vimeoId": "1159124902",
           "status": "completed"
         },
         {
           "id": 2,
-          "title": "개발 환경 설정",
+          "title": "바이브 코딩 시작하기",
           "duration": "22:45",
           "durationSeconds": 1365,
-          "vimeoId": "76979871",
+          "vimeoId": "1159132372",
           "status": "completed"
         },
         {
           "id": 3,
-          "title": "JSX 문법 이해하기",
+          "title": "바이브 코딩 Skill-up",
           "duration": "28:10",
           "durationSeconds": 1690,
-          "vimeoId": "76979871",
+          "vimeoId": "1159132630",
           "status": "completed"
         },
         {
           "id": 4,
-          "title": "컴포넌트와 Props",
+          "title": "프로젝트 시작하기",
           "duration": "45:32",
           "durationSeconds": 2732,
-          "vimeoId": "76979871",
+          "vimeoId": "1159140854",
           "status": "playing"
         },
         {
           "id": 5,
-          "title": "State와 생명주기",
+          "title": "프로젝트 문제 해결하기",
           "duration": "38:15",
           "durationSeconds": 2295,
-          "vimeoId": "76979871",
+          "vimeoId": "1159147063",
           "status": "pending"
         },
         {
