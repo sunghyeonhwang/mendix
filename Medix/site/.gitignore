@@ -1,0 +1,22 @@
+# FTP/SFTP 설정 파일 (비밀번호 포함)
+.vscode/sftp.json
+
+# 환경 설정 파일
+.env
+.env.local
+config.php
+
+# 시스템 파일
+.DS_Store
+Thumbs.db
+
+# IDE 설정
+.vscode/
+.idea/
+
+# 로그 파일
+*.log
+
+# 임시 파일
+*.tmp
+*.temp
