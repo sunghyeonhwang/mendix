@@ -1,0 +1,19 @@
+{
+  "name": "jb-lessons",
+  "version": "1.0.0",
+  "description": "JB Lessons - 온라인 강의 플랫폼 (학습 진도 추적 포함)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node tests/integration.test.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "jsdom": "^27.4.0"
+  }
+}
