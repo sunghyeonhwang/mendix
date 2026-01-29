@@ -50,7 +50,7 @@
 
   // ----------------------------------------------------------
   // Resolve the effective theme (dark or light)
-  // Priority: localStorage manual choice > system preference
+  // Priority: localStorage manual choice > dark theme default
   // ----------------------------------------------------------
   function resolveTheme() {
     try {
@@ -60,8 +60,8 @@
     } catch (_) {
       // localStorage may be unavailable (private browsing, disabled)
     }
-    // No manual preference — follow system setting
-    return mediaQuery ? mediaQuery.matches : false;
+    // No manual preference — default to dark theme
+    return true;
   }
 
   // ----------------------------------------------------------
@@ -168,12 +168,18 @@
   var resumeBtn = document.getElementById('resumePopupResume');
   var detailEl = document.getElementById('resumePopupDetail');
 
-  // --- Utility: format seconds to mm:ss ---
+  // --- Utility: format seconds to h:mm:ss or mm:ss ---
   function formatTime(seconds) {
     if (isNaN(seconds) || seconds < 0) seconds = 0;
-    var m = Math.floor(seconds / 60);
+    var h = Math.floor(seconds / 3600);
+    var m = Math.floor((seconds % 3600) / 60);
     var s = Math.floor(seconds % 60);
-    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    
+    if (h > 0) {
+      return h + ':' + (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    } else {
+      return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
   }
 
   function hidePopup() {
@@ -372,23 +378,26 @@
   // Demo Vimeo video ID (public sample video for development)
   var DEMO_VIMEO_ID = '76979871';
 
-  // Load course data from JSON
+  // Load course data from JSON (with cache busting)
   function loadCourseData() {
-    return fetch('course-data.json')
+    return fetch('course-data.json?v=' + Date.now())
       .then(function (res) {
         if (!res.ok) throw new Error('Failed to load course data');
         return res.json();
       })
       .then(function (data) {
         courseData = data;
-        // Build Vimeo ID map
+        // Build Vimeo ID map (with hash for private videos)
         if (data.sections) {
           for (var i = 0; i < data.sections.length; i++) {
             var section = data.sections[i];
             if (section.lectures) {
               for (var j = 0; j < section.lectures.length; j++) {
                 var lecture = section.lectures[j];
-                lectureVimeoMap[lecture.id] = lecture.vimeoId;
+                lectureVimeoMap[lecture.id] = {
+                  id: lecture.vimeoId,
+                  hash: lecture.vimeoHash || null
+                };
               }
             }
           }
@@ -402,9 +411,15 @@
       });
   }
 
-  // Get Vimeo ID for a lecture
+  // Get Vimeo data for a lecture (returns {id, hash})
+  function getVimeoDataForLecture(lectureId) {
+    return lectureVimeoMap[lectureId] || { id: DEMO_VIMEO_ID, hash: null };
+  }
+  
+  // Get Vimeo ID for a lecture (legacy compatibility)
   function getVimeoIdForLecture(lectureId) {
-    return lectureVimeoMap[lectureId] || DEMO_VIMEO_ID;
+    var data = getVimeoDataForLecture(lectureId);
+    return data.id;
   }
 
   // Initialize current lecture info from DOM (the lecture marked as 'playing')
@@ -424,33 +439,45 @@
   var ICON_VOLUME_ON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>';
   var ICON_VOLUME_OFF = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>';
 
-  // --- Utility: format seconds to mm:ss ---
+  // --- Utility: format seconds to h:mm:ss or mm:ss ---
   function formatTime(seconds) {
     if (isNaN(seconds) || seconds < 0) seconds = 0;
-    var m = Math.floor(seconds / 60);
+    var h = Math.floor(seconds / 3600);
+    var m = Math.floor((seconds % 3600) / 60);
     var s = Math.floor(seconds % 60);
-    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    
+    if (h > 0) {
+      return h + ':' + (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    } else {
+      return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
   }
 
   // --- Initialize Vimeo Player ---
-  function initPlayer(vimeoId) {
+  function initPlayer(vimeoData) {
     if (typeof Vimeo === 'undefined' || typeof Vimeo.Player === 'undefined') {
       console.warn('[VimeoPlayer] Vimeo Player SDK not loaded');
       return;
     }
 
-    // Set iframe src to load the Vimeo video
-    iframe.src = 'https://player.vimeo.com/video/' + vimeoId + '?title=0&byline=0&portrait=0&controls=0&transparent=0';
+    // Handle both old format (string) and new format (object)
+    var vimeoId = typeof vimeoData === 'object' ? vimeoData.id : vimeoData;
+    var vimeoHash = typeof vimeoData === 'object' ? vimeoData.hash : null;
+
+    // Build Vimeo player URL (with hash for private videos)
+    var videoUrl = 'https://player.vimeo.com/video/' + vimeoId;
+    var params = [];
+    if (vimeoHash) {
+      params.push('h=' + vimeoHash);
+    }
+    params.push('title=0', 'byline=0', 'portrait=0', 'controls=0', 'transparent=0');
+    iframe.src = videoUrl + '?' + params.join('&');
 
     player = new Vimeo.Player(iframe);
 
-    // Hide placeholder once video is ready
+    // Get initial duration when player is ready
     player.ready().then(function () {
-      if (placeholder) {
-        placeholder.style.display = 'none';
-      }
-
-      // Get initial duration
+      // Placeholder is already hidden by default in HTML
       return player.getDuration();
     }).then(function (dur) {
       videoDuration = dur;
@@ -821,13 +848,14 @@
     lectureEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     // Load the lecture's video (each lecture has its own Vimeo ID)
-    var vimeoId = getVimeoIdForLecture(lectureId);
+    var vimeoData = getVimeoDataForLecture(lectureId);
+    var vimeoId = vimeoData.id;
     if (player && vimeoId) {
       // Check if we need to load a different video
       player.getVideoId().then(function (currentVimeoId) {
         if (String(currentVimeoId) !== String(vimeoId)) {
           // Different video - reload player with new video
-          initPlayer(vimeoId);
+          initPlayer(vimeoData);
         } else {
           // Same video - just restart from beginning
           player.setCurrentTime(0).then(function () {
@@ -838,11 +866,11 @@
         }
       }).catch(function () {
         // If getVideoId fails, just reload
-        initPlayer(vimeoId);
+        initPlayer(vimeoData);
       });
     } else if (!player && vimeoId) {
       // Player not initialized yet
-      initPlayer(vimeoId);
+      initPlayer(vimeoData);
     }
   }
 
@@ -985,11 +1013,16 @@
     playBtn.addEventListener('click', togglePlayPause);
   }
 
-  // Placeholder click to start video
+  // Placeholder click to start video (placeholder is hidden by default, so this is rarely used)
   if (placeholder) {
     placeholder.addEventListener('click', function () {
       if (!player) {
-        initPlayer(DEMO_VIMEO_ID);
+        var firstLecture = curriculumNav ? curriculumNav.querySelector('[data-lecture-id]') : null;
+        if (firstLecture) {
+          selectLecture(firstLecture);
+        } else {
+          initPlayer(DEMO_VIMEO_ID);
+        }
       } else {
         togglePlayPause();
       }
@@ -1156,9 +1189,149 @@
     }
   });
 
+  // --- Render Curriculum from course-data.json ---
+  function renderCurriculum() {
+    var nav = document.getElementById('curriculumNav');
+    if (!nav || !courseData || !courseData.sections) {
+      console.warn('[VimeoPlayer] Cannot render curriculum - missing data or DOM element');
+      return;
+    }
+
+    // Clear existing content
+    nav.innerHTML = '';
+
+    // Render each section
+    courseData.sections.forEach(function(section, sectionIndex) {
+      var details = document.createElement('details');
+      details.className = 'group/section border-b border-gray-200 dark:border-[#2e2e36] transition-colors';
+      details.setAttribute('data-section-id', section.id);
+      if (sectionIndex === 0) details.open = true; // First section open by default
+
+      // Section header (summary)
+      var summary = document.createElement('summary');
+      summary.className = 'flex items-center justify-between gap-3 px-4 md:px-6 py-3 md:py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-[#28282e] transition-colors duration-150 list-none [&::-webkit-details-marker]:hidden';
+      
+      // Calculate section progress
+      var completedCount = section.lectures.filter(function(l) { return l.status === 'completed'; }).length;
+      var totalCount = section.lectures.length;
+      var progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+      summary.innerHTML = 
+        '<svg class="flex-shrink-0 w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 group-open/section:rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+        '<polyline points="9 18 15 12 9 6"/>' +
+        '</svg>' +
+        '<div class="flex flex-col gap-1 min-w-0 flex-1">' +
+        '<span class="text-sm font-semibold text-gray-900 dark:text-gray-100">' + section.title + '</span>' +
+        '<span class="text-xs text-gray-400 dark:text-gray-500">' + section.description + '</span>' +
+        '</div>' +
+        '<div class="flex items-center gap-1 flex-shrink-0" role="progressbar" aria-valuenow="' + progressPercent + '" aria-valuemin="0" aria-valuemax="100" aria-label="' + section.title + ' 진도율 ' + progressPercent + '%">' +
+        '<div class="w-12 h-1 bg-gray-200 dark:bg-[#232329] rounded-full overflow-hidden transition-colors duration-300">' +
+        '<div class="h-full bg-emerald-500 dark:bg-emerald-400 rounded-full transition-all duration-300" style="width: ' + progressPercent + '%"></div>' +
+        '</div>' +
+        '<span class="text-xs text-gray-400 dark:text-gray-500 font-mono font-medium min-w-[24px] text-right">' + completedCount + '/' + totalCount + '</span>' +
+        '</div>';
+
+      details.appendChild(summary);
+
+      // Lecture list (ul)
+      var ul = document.createElement('ul');
+      ul.className = 'pb-2';
+      ul.setAttribute('role', 'list');
+
+      section.lectures.forEach(function(lecture) {
+        var li = document.createElement('li');
+        li.setAttribute('data-lecture-id', lecture.id);
+        li.setAttribute('data-status', lecture.status);
+
+        var baseClasses = 'flex items-center gap-2 px-4 md:px-6 pl-6 md:pl-8 py-2 cursor-pointer border-l-[3px] transition-colors duration-150';
+        
+        if (lecture.status === 'playing') {
+          li.className = baseClasses + ' bg-indigo-50 dark:bg-indigo-500/[0.08] border-indigo-600 dark:border-indigo-400';
+          li.setAttribute('aria-current', 'true');
+        } else if (lecture.status === 'completed' || lecture.status === 'pending') {
+          li.className = baseClasses + ' hover:bg-gray-50 dark:hover:bg-[#28282e] border-transparent';
+        }
+
+        // Status icon
+        var iconSpan = document.createElement('span');
+        iconSpan.className = 'flex-shrink-0 flex items-center justify-center w-5 h-5';
+        
+        if (lecture.status === 'completed') {
+          iconSpan.setAttribute('aria-label', '수강 완료');
+          iconSpan.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+            '<circle cx="12" cy="12" r="11" class="fill-emerald-500/15 dark:fill-emerald-400/15"/>' +
+            '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" class="fill-emerald-500 dark:fill-emerald-400"/>' +
+            '</svg>';
+        } else if (lecture.status === 'playing') {
+          iconSpan.className += ' text-indigo-600 dark:text-indigo-400';
+          iconSpan.setAttribute('aria-label', '현재 재생 중');
+          iconSpan.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+        } else {
+          iconSpan.className += ' text-gray-400 dark:text-gray-500';
+          iconSpan.setAttribute('aria-label', '미수강');
+          iconSpan.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+            '<circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>' +
+            '</svg>';
+        }
+
+        // Title
+        var titleSpan = document.createElement('span');
+        titleSpan.className = 'flex-1 text-sm min-w-0 whitespace-nowrap overflow-hidden text-ellipsis';
+        
+        if (lecture.status === 'completed') {
+          titleSpan.className += ' text-gray-500 dark:text-gray-400 line-through decoration-gray-300 dark:decoration-gray-600';
+        } else if (lecture.status === 'playing') {
+          titleSpan.className += ' text-indigo-600 dark:text-indigo-400 font-medium';
+        } else {
+          titleSpan.className += ' text-gray-900 dark:text-gray-100';
+        }
+        titleSpan.textContent = lecture.title;
+
+        // Duration
+        var durationSpan = document.createElement('span');
+        durationSpan.className = 'flex-shrink-0 text-xs font-mono';
+        
+        if (lecture.status === 'playing') {
+          durationSpan.className += ' text-indigo-500 dark:text-indigo-400 font-medium';
+        } else {
+          durationSpan.className += ' text-gray-400 dark:text-gray-500';
+        }
+        durationSpan.textContent = lecture.duration;
+
+        li.appendChild(iconSpan);
+        li.appendChild(titleSpan);
+        li.appendChild(durationSpan);
+        ul.appendChild(li);
+      });
+
+      details.appendChild(ul);
+      nav.appendChild(details);
+    });
+
+    console.log('[VimeoPlayer] Curriculum rendered from course data');
+  }
+
   // --- Initialize: Load course data on page load ---
   loadCourseData().then(function () {
     console.log('[VimeoPlayer] Ready - Lecture data loaded');
+    renderCurriculum();
+    
+    // Refresh all progress UI after curriculum is rendered
+    if (window._progressTracker) {
+      window._progressTracker.refresh();
+    }
+    
+    // Auto-load the first lecture with 'playing' status, or the first lecture overall
+    var firstPlayingLecture = curriculumNav ? curriculumNav.querySelector('[data-status="playing"]') : null;
+    if (!firstPlayingLecture) {
+      firstPlayingLecture = curriculumNav ? curriculumNav.querySelector('[data-lecture-id]') : null;
+    }
+    
+    if (firstPlayingLecture) {
+      var lectureId = firstPlayingLecture.getAttribute('data-lecture-id');
+      var vimeoData = getVimeoDataForLecture(lectureId);
+      initPlayer(vimeoData);
+    }
   });
 })();
 

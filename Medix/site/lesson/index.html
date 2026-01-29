@@ -62,12 +62,12 @@
       <div class="flex items-center gap-3 sm:gap-6 flex-shrink-0">
 
         <!-- Progress Bar -->
-        <div class="flex items-center gap-2" role="progressbar" aria-valuenow="13" aria-valuemin="0" aria-valuemax="100" aria-label="강의 진도율 13%">
+        <div class="flex items-center gap-2" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="강의 진도율 0%">
           <span class="hidden sm:inline text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">진도율</span>
           <div class="w-[60px] xs:w-[80px] sm:w-[120px] h-1.5 bg-gray-200 dark:bg-[#232329] rounded-full overflow-hidden transition-colors duration-300">
-            <div class="h-full bg-indigo-600 dark:bg-indigo-400 rounded-full transition-all duration-300" style="width: 13%" id="headerProgressFill"></div>
+            <div class="h-full bg-indigo-600 dark:bg-indigo-400 rounded-full transition-all duration-300" style="width: 0%" id="headerProgressFill"></div>
           </div>
-          <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 min-w-[36px]" id="headerProgressValue">13%</span>
+          <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 min-w-[36px]" id="headerProgressValue">0%</span>
         </div>
 
         <!-- Theme Toggle Switch -->
@@ -116,8 +116,8 @@
               allowfullscreen
               title="강의 영상 플레이어"
             ></iframe>
-            <!-- Placeholder overlay (iframe 로드 전 표시) -->
-            <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black text-white/60 cursor-pointer hover:text-white/90 transition-colors duration-200" id="videoPlaceholder">
+            <!-- Placeholder overlay (iframe 로드 전 표시) - 숨김 처리 -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black text-white/60 cursor-pointer hover:text-white/90 transition-colors duration-200" id="videoPlaceholder" style="display: none;">
               <svg class="hover:scale-110 transition-transform duration-200" width="72" height="72" viewBox="0 0 72 72" fill="none" aria-hidden="true">
                 <circle cx="36" cy="36" r="35" stroke="currentColor" stroke-width="2" opacity="0.3"/>
                 <path d="M29 22l22 14-22 14V22z" fill="currentColor"/>
@@ -176,8 +176,8 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
               </span>
               <div class="min-w-0">
-                <h2 class="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100 truncate" id="currentLectureTitle">컴포넌트와 Props</h2>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">섹션 1: React 기초 &middot; 4/6강</p>
+                <h2 class="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100 truncate" id="currentLectureTitle">프로젝트 시작하기</h2>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5" id="currentLectureMeta">섹션 1: 바이브 코딩 기초 &middot; 4/6강</p>
               </div>
             </div>
             <div class="flex items-center gap-3 flex-shrink-0">
@@ -222,20 +222,24 @@
           <!-- Sidebar Header -->
           <div class="p-4 md:p-6 border-b border-gray-200 dark:border-[#2e2e36] flex-shrink-0 transition-colors duration-300">
             <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 hidden lg:block">강의 목차</h2>
-            <span class="text-sm text-gray-500 dark:text-gray-400 block mb-2">24개 강의 &middot; 총 12시간</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400 block mb-2">6개 강의 &middot; 총 4시간 6분</span>
             <!-- Sidebar Progress Summary -->
-            <div class="flex items-center gap-2 mt-1" role="progressbar" aria-valuenow="13" aria-valuemin="0" aria-valuemax="100" aria-label="전체 강의 진도율 13%" id="sidebarProgress">
+            <div class="flex items-center gap-2 mt-1" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="전체 강의 진도율 0%" id="sidebarProgress">
               <div class="flex-1 h-1.5 bg-gray-200 dark:bg-[#232329] rounded-full overflow-hidden transition-colors duration-300">
-                <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 dark:from-emerald-400 dark:to-emerald-300 rounded-full transition-all duration-300" style="width: 13%" id="sidebarProgressFill"></div>
+                <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 dark:from-emerald-400 dark:to-emerald-300 rounded-full transition-all duration-300" style="width: 0%" id="sidebarProgressFill"></div>
               </div>
-              <span class="text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap" id="sidebarProgressText">3/24 완료</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap" id="sidebarProgressText">0/6 완료</span>
             </div>
           </div>
 
-          <!-- Curriculum List -->
+          <!-- Curriculum List (will be dynamically loaded from course-data.json) -->
           <nav class="overflow-y-auto flex-1 scrollbar-thin" aria-label="커리큘럼 목록" id="curriculumNav">
+            <!-- Loading placeholder -->
+            <div class="p-6 text-center text-gray-500 dark:text-gray-400">
+              <p>강의 목록 로딩중...</p>
+            </div>
             <!-- Section 1: 바이브 코딩 기초 (현재 활성 섹션 - open) -->
-            <details class="group/section border-b border-gray-200 dark:border-[#2e2e36] transition-colors" data-section-id="1" open>
+            <details class="group/section border-b border-gray-200 dark:border-[#2e2e36] transition-colors" data-section-id="1" open style="display:none">
               <summary class="flex items-center justify-between gap-3 px-4 md:px-6 py-3 md:py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-[#28282e] transition-colors duration-150 list-none [&::-webkit-details-marker]:hidden">
                 <svg class="flex-shrink-0 w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 group-open/section:rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <polyline points="9 18 15 12 9 6"/>
@@ -584,71 +588,6 @@
             도구 활용법, 코딩 기술, 문제 해결 방법 등 핵심 개념을
             실습 중심으로 학습합니다.
           </p>
-
-          <!-- 현재 강의 요약 -->
-          <div class="p-4 md:p-5 bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl transition-colors duration-300" id="currentLectureSummary">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="flex items-center justify-center w-6 h-6 bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 rounded-md" aria-hidden="true">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-              </span>
-                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">현재 강의: 프로젝트 시작하기</h3>
-              <span class="ml-auto text-xs text-gray-400 dark:text-gray-500 font-mono">4/24강</span>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-3">
-              바이브 코딩으로 실제 프로젝트를 시작하는 방법을 학습합니다.
-              프로젝트 구조 설정, 기본 컴포넌트 생성, 데이터 연동 방법 등
-              실전에서 바로 활용할 수 있는 프로젝트 시작 노하우를 배웁니다.
-            </p>
-            <div class="flex flex-wrap gap-2">
-              <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 rounded-full">프로젝트</span>
-              <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 rounded-full">실전</span>
-              <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 rounded-full">바이브코딩</span>
-              <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 rounded-full">시작하기</span>
-            </div>
-          </div>
-
-          <!-- Meta Info -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0 text-indigo-600 dark:text-indigo-400" aria-hidden="true">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-              <span>난이도: 초급 ~ 고급</span>
-            </div>
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0 text-indigo-600 dark:text-indigo-400" aria-hidden="true">
-                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/>
-              </svg>
-              <span>총 12시간 분량</span>
-            </div>
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0 text-indigo-600 dark:text-indigo-400" aria-hidden="true">
-                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-              </svg>
-              <span>수강생 2,847명</span>
-            </div>
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0 text-indigo-600 dark:text-indigo-400" aria-hidden="true">
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-              </svg>
-              <span>평점 4.8 / 5.0</span>
-            </div>
-          </div>
-
-          <!-- Instructor -->
-          <div class="flex items-center gap-4 pt-4 border-t border-gray-200 dark:border-[#2e2e36] transition-colors duration-300">
-            <div class="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden" aria-hidden="true">
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                <circle cx="24" cy="24" r="24" class="fill-indigo-100 dark:fill-indigo-900"/>
-                <circle cx="24" cy="18" r="8" class="fill-indigo-600 dark:fill-indigo-400"/>
-                <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" class="fill-indigo-600 dark:fill-indigo-400"/>
-              </svg>
-            </div>
-            <div class="flex flex-col">
-              <span class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider">강사</span>
-              <span class="text-base font-semibold text-gray-900 dark:text-gray-100">김재범</span>
-            </div>
-          </div>
         </div>
 
         <!-- 우측: 학습 자료 다운로드 -->
@@ -661,260 +600,20 @@
           </div>
 
           <div class="flex flex-col gap-3">
-            <!-- Download Item 1: 강의 슬라이드 -->
-            <a href="#" class="group flex items-center gap-4 p-4 bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:shadow-sm transition-all duration-200" aria-label="강의 슬라이드 PDF 다운로드">
-              <span class="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-red-50 dark:bg-red-500/10 text-red-500 dark:text-red-400 rounded-lg" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM6 20V4h6v6h6v10H6z"/></svg>
-              </span>
-              <div class="flex-1 min-w-0">
-                <span class="block text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150 truncate">강의 슬라이드</span>
-                <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">PDF &middot; 2.4 MB</span>
-              </div>
-              <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-              </span>
-            </a>
-
-            <!-- Download Item 2: 소스 코드 -->
-            <a href="#" class="group flex items-center gap-4 p-4 bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:shadow-sm transition-all duration-200" aria-label="예제 소스 코드 다운로드">
-              <span class="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-blue-50 dark:bg-blue-500/10 text-blue-500 dark:text-blue-400 rounded-lg" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
-              </span>
-              <div class="flex-1 min-w-0">
-                <span class="block text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150 truncate">예제 소스 코드</span>
-                <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">ZIP &middot; 856 KB</span>
-              </div>
-              <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-              </span>
-            </a>
-
-            <!-- Download Item 3: 실습 가이드 -->
-            <a href="#" class="group flex items-center gap-4 p-4 bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:shadow-sm transition-all duration-200" aria-label="실습 가이드 문서 다운로드">
-              <span class="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-amber-50 dark:bg-amber-500/10 text-amber-500 dark:text-amber-400 rounded-lg" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H6V4h2v8l2.5-1.5L13 12V4h5v16z"/></svg>
-              </span>
-              <div class="flex-1 min-w-0">
-                <span class="block text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150 truncate">실습 가이드</span>
-                <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">PDF &middot; 1.1 MB</span>
-              </div>
-              <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-              </span>
-            </a>
-
-            <!-- Download Item 4: 치트시트 -->
-            <a href="#" class="group flex items-center gap-4 p-4 bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:shadow-sm transition-all duration-200" aria-label="React 치트시트 다운로드">
+            <!-- Padlet Link -->
+            <a href="https://padlet.com/sideonaidev/jb-jtlc9dlee2onf79w" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-4 p-4 bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:shadow-sm transition-all duration-200" aria-label="패들렛 바로가기">
               <span class="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-purple-50 dark:bg-purple-500/10 text-purple-500 dark:text-purple-400 rounded-lg" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
               </span>
               <div class="flex-1 min-w-0">
-                <span class="block text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150 truncate">React 치트시트</span>
-                <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">PNG &middot; 320 KB</span>
+                <span class="block text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150 truncate">패들렛</span>
+                <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">새 창에서 열기</span>
               </div>
               <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
               </span>
             </a>
           </div>
-        </div>
-      </div>
-
-      <!-- 하단: 다른 강연 목록 (6개 카드 반응형 그리드) -->
-      <div class="mt-10 md:mt-14 pt-8 md:pt-10 border-t border-gray-200 dark:border-[#2e2e36] transition-colors duration-300" id="recommendedCoursesArea">
-        <div class="flex items-center justify-between gap-4 mb-6 md:mb-8">
-          <div class="flex items-center gap-3">
-            <span class="flex items-center justify-center w-10 h-10 bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 rounded-xl" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
-            </span>
-            <h2 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">다른 강연 목록</h2>
-          </div>
-          <a href="#" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors duration-150">
-            전체 보기
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-          </a>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-          <!-- Card 1 -->
-          <article class="group bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-all duration-200">
-            <div class="relative w-full pt-[56.25%] bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/40 dark:to-blue-950/40 transition-colors duration-300 overflow-hidden">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" class="text-indigo-300 dark:text-indigo-700 group-hover:scale-110 transition-transform duration-300"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-              </div>
-              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 text-xs font-semibold text-white bg-indigo-600 rounded-md">인기</span>
-              <span class="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white bg-black/50 rounded-md backdrop-blur-sm">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
-                8시간
-              </span>
-            </div>
-            <div class="p-3.5 md:p-4 flex flex-col gap-2.5">
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150">Next.js 실전 프로젝트</h3>
-              <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">서버 사이드 렌더링부터 풀스택 개발까지 실무 프로젝트로 배우는 Next.js</p>
-              <div class="flex items-center justify-between pt-2.5 border-t border-gray-100 dark:border-[#2e2e36] transition-colors duration-300">
-                <div class="flex items-center gap-2">
-                  <span class="flex items-center gap-1 text-xs font-semibold text-amber-500">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                    4.9
-                  </span>
-                  <span class="text-xs text-gray-300 dark:text-gray-600" aria-hidden="true">&middot;</span>
-                  <span class="text-xs text-gray-400 dark:text-gray-500">24강</span>
-                </div>
-                <span class="text-xs text-gray-400 dark:text-gray-500">1,523명</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 2 -->
-          <article class="group bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-all duration-200">
-            <div class="relative w-full pt-[56.25%] bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 transition-colors duration-300 overflow-hidden">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" class="text-emerald-300 dark:text-emerald-700 group-hover:scale-110 transition-transform duration-300"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
-              </div>
-              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 text-xs font-semibold text-white bg-emerald-500 rounded-md">신규</span>
-              <span class="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white bg-black/50 rounded-md backdrop-blur-sm">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
-                10시간
-              </span>
-            </div>
-            <div class="p-3.5 md:p-4 flex flex-col gap-2.5">
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150">TypeScript 마스터 클래스</h3>
-              <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">타입 시스템의 모든 것을 정복하고 안전한 코드를 작성하세요</p>
-              <div class="flex items-center justify-between pt-2.5 border-t border-gray-100 dark:border-[#2e2e36] transition-colors duration-300">
-                <div class="flex items-center gap-2">
-                  <span class="flex items-center gap-1 text-xs font-semibold text-amber-500">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                    4.7
-                  </span>
-                  <span class="text-xs text-gray-300 dark:text-gray-600" aria-hidden="true">&middot;</span>
-                  <span class="text-xs text-gray-400 dark:text-gray-500">18강</span>
-                </div>
-                <span class="text-xs text-gray-400 dark:text-gray-500">980명</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 3 -->
-          <article class="group bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-all duration-200">
-            <div class="relative w-full pt-[56.25%] bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 transition-colors duration-300 overflow-hidden">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" class="text-amber-300 dark:text-amber-700 group-hover:scale-110 transition-transform duration-300"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6v-2zm0 4h8v2H6v-2zm10 0h2v2h-2v-2zm-6-4h8v2h-8v-2z"/></svg>
-              </div>
-              <span class="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white bg-black/50 rounded-md backdrop-blur-sm">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
-                6시간
-              </span>
-            </div>
-            <div class="p-3.5 md:p-4 flex flex-col gap-2.5">
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150">Node.js 백엔드 개발</h3>
-              <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">Express부터 NestJS까지 서버 개발 완벽 가이드</p>
-              <div class="flex items-center justify-between pt-2.5 border-t border-gray-100 dark:border-[#2e2e36] transition-colors duration-300">
-                <div class="flex items-center gap-2">
-                  <span class="flex items-center gap-1 text-xs font-semibold text-amber-500">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                    4.6
-                  </span>
-                  <span class="text-xs text-gray-300 dark:text-gray-600" aria-hidden="true">&middot;</span>
-                  <span class="text-xs text-gray-400 dark:text-gray-500">20강</span>
-                </div>
-                <span class="text-xs text-gray-400 dark:text-gray-500">2,105명</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 4 -->
-          <article class="group bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-all duration-200">
-            <div class="relative w-full pt-[56.25%] bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/40 dark:to-purple-950/40 transition-colors duration-300 overflow-hidden">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" class="text-violet-300 dark:text-violet-700 group-hover:scale-110 transition-transform duration-300"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
-              </div>
-              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 text-xs font-semibold text-white bg-indigo-600 rounded-md">인기</span>
-              <span class="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white bg-black/50 rounded-md backdrop-blur-sm">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
-                9시간
-              </span>
-            </div>
-            <div class="p-3.5 md:p-4 flex flex-col gap-2.5">
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150">JavaScript 알고리즘</h3>
-              <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">코딩 테스트 대비 핵심 알고리즘과 자료구조 완벽 정복</p>
-              <div class="flex items-center justify-between pt-2.5 border-t border-gray-100 dark:border-[#2e2e36] transition-colors duration-300">
-                <div class="flex items-center gap-2">
-                  <span class="flex items-center gap-1 text-xs font-semibold text-amber-500">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                    4.8
-                  </span>
-                  <span class="text-xs text-gray-300 dark:text-gray-600" aria-hidden="true">&middot;</span>
-                  <span class="text-xs text-gray-400 dark:text-gray-500">32강</span>
-                </div>
-                <span class="text-xs text-gray-400 dark:text-gray-500">3,412명</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 5 -->
-          <article class="group bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-all duration-200">
-            <div class="relative w-full pt-[56.25%] bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-950/40 dark:to-rose-950/40 transition-colors duration-300 overflow-hidden">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" class="text-pink-300 dark:text-pink-700 group-hover:scale-110 transition-transform duration-300"><path d="M14.06 9.94L12 9l2.06-.94L15 6l.94 2.06L18 9l-2.06.94L15 12l-.94-2.06zM4 14l.94-2.06L7 11l-2.06-.94L4 8l-.94 2.06L1 11l2.06.94zm4.5-5l1.09-2.41L12 5.5 9.59 4.41 8.5 2 7.41 4.41 5 5.5l2.41 1.09zm-4 11.5l6-6.01 4 4L23 8.93l-1.41-1.41-7.09 7.97-4-4L3 19z"/></svg>
-              </div>
-              <span class="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white bg-black/50 rounded-md backdrop-blur-sm">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
-                5시간
-              </span>
-            </div>
-            <div class="p-3.5 md:p-4 flex flex-col gap-2.5">
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150">GraphQL 완벽 입문</h3>
-              <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">REST를 넘어서는 차세대 API 설계와 구현 실습</p>
-              <div class="flex items-center justify-between pt-2.5 border-t border-gray-100 dark:border-[#2e2e36] transition-colors duration-300">
-                <div class="flex items-center gap-2">
-                  <span class="flex items-center gap-1 text-xs font-semibold text-amber-500">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                    4.5
-                  </span>
-                  <span class="text-xs text-gray-300 dark:text-gray-600" aria-hidden="true">&middot;</span>
-                  <span class="text-xs text-gray-400 dark:text-gray-500">15강</span>
-                </div>
-                <span class="text-xs text-gray-400 dark:text-gray-500">756명</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 6 -->
-          <article class="group bg-white dark:bg-[#232329] border border-gray-200 dark:border-[#2e2e36] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-all duration-200">
-            <div class="relative w-full pt-[56.25%] bg-gradient-to-br from-cyan-50 to-sky-50 dark:from-cyan-950/40 dark:to-sky-950/40 transition-colors duration-300 overflow-hidden">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" class="text-cyan-300 dark:text-cyan-700 group-hover:scale-110 transition-transform duration-300"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
-              </div>
-              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 text-xs font-semibold text-white bg-emerald-500 rounded-md">신규</span>
-              <span class="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white bg-black/50 rounded-md backdrop-blur-sm">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
-                7시간
-              </span>
-            </div>
-            <div class="p-3.5 md:p-4 flex flex-col gap-2.5">
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150">Docker &amp; Kubernetes</h3>
-              <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">컨테이너 기반 DevOps 환경 구축과 오케스트레이션 실전</p>
-              <div class="flex items-center justify-between pt-2.5 border-t border-gray-100 dark:border-[#2e2e36] transition-colors duration-300">
-                <div class="flex items-center gap-2">
-                  <span class="flex items-center gap-1 text-xs font-semibold text-amber-500">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                    4.7
-                  </span>
-                  <span class="text-xs text-gray-300 dark:text-gray-600" aria-hidden="true">&middot;</span>
-                  <span class="text-xs text-gray-400 dark:text-gray-500">22강</span>
-                </div>
-                <span class="text-xs text-gray-400 dark:text-gray-500">1,198명</span>
-              </div>
-            </div>
-          </article>
-        </div>
-
-        <!-- Mobile "전체 보기" link -->
-        <div class="flex sm:hidden justify-center mt-6">
-          <a href="#" class="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors duration-150">
-            전체 강연 보기
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-          </a>
         </div>
       </div>
 
@@ -924,11 +623,10 @@
   <!-- ========== FOOTER ========== -->
   <footer class="bg-white dark:bg-[#16161a] border-t border-gray-200 dark:border-[#2e2e36] py-6 transition-colors duration-300">
     <div class="max-w-screen-2xl mx-auto px-4 md:px-6 text-center">
-      <p class="text-sm text-gray-400 dark:text-gray-500">&copy; 2026 JB Lessons. All rights reserved.</p>
     </div>
   </footer>
 
   <script src="https://player.vimeo.com/api/player.js"></script>
-  <script src="client.js"></script>
+  <script src="client.js?v=4"></script>
 </body>
 </html>
